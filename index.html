@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hôm nay ăn gì</title>
+<meta name="description" content="Mở hòm ăn trưa: quay ngẫu nhiên món ăn theo ngân sách ở Hà Nội.">
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+<header><b>truanayangi</b><button id="snd" aria-pressed="true">🔊 Âm thanh bật</button></header>
+<main>
+  <h1>Mở hòm ăn trưa</h1>
+  <div class="sub">Cư dân mạng đã mở <b id="cnt">0</b> hòm</div>
+  <div class="reel" id="reel" aria-live="polite"><div class="mark"></div><div class="strip" id="strip"></div></div>
+  <div class="ctl">
+    <label>Mức chi tối đa mỗi món
+      <select id="bud"><option value="30000">30.000đ</option><option value="50000" selected>50.000đ</option><option value="80000">80.000đ</option><option value="120000">120.000đ</option><option value="9999999">Không giới hạn</option></select>
+    </label>
+    <label class="sw"><input type="checkbox" id="veg"> 🌿 Ăn chay</label>
+    <button class="go" id="go">MỞ HÒM</button>
+  </div>
+  <div class="bar"><h2 style="border:0;padding:0">Vật phẩm trong hòm</h2><button class="add" id="add">+ Thêm món</button></div>
+  <div class="grid" id="grid"></div>
+  <p class="note">Giá là mức tham khảo trung bình tại Hà Nội (1 suất, quán bình dân – tầm trung), bấm vào món để sửa giá. Ảnh tải lên được lưu trong trình duyệt của bạn.</p>
+</main>
+
+<dialog id="dlg"><form method="dialog" class="f" id="frm">
+  <div class="pv" id="pv"></div>
+  <input type="file" id="file" accept="image/*">
+  <label>Tên món<input type="text" id="fn" required maxlength="40"></label>
+  <label>Giá trung bình (đ)<input type="number" id="fp" min="0" step="1000" required></label>
+  <label>Emoji (hiện khi chưa có ảnh)<input type="text" id="fe" maxlength="4"></label>
+  <label class="sw"><input type="checkbox" id="fv"> Món chay</label>
+  <div class="row"><button type="button" class="del" id="fd">Xóa</button><button type="button" id="fc">Hủy</button><button class="ok" id="fs" value="ok">Lưu</button></div>
+</form></dialog>
+
+<dialog id="res"><div class="pv" id="rpv"></div><h3 id="rn"></h3><p id="rp"></p>
+  <div class="row" style="justify-content:center;display:flex"><button class="add" id="rc">Đóng</button></div></dialog>
+<script src="js/utils.js"></script>
+<script src="js/data.js"></script>
+<script src="js/images.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/reel.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
