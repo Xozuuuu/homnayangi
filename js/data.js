@@ -39,12 +39,6 @@ const DEF = [
   ["Pizza", 99000, "🍕", 0, "img/pizza.avif"],
   ["Nem nướng Nha Trang", 60000, "🍢", 0, "img/nemnuongnhatrang.jpg"],
   ["Gỏi cuốn tôm thịt", 35000, "🥗", 0, "img/goicuontomthit.jpg"],
-  ["Cơm trộn Hàn Quốc", 70000, "🍱", 0, ""],
-  ["Lẩu mini", 120000, "🍲", 0, ""],
-  ["Cơm chay đậu sốt cà", 40000, "🍛", 1, ""],
-  ["Gỏi cuốn chay", 30000, "🥗", 1, ""],
-  ["Bún chay", 40000, "🍜", 1, ""],
-  ["Xôi đậu xanh", 20000, "🍙", 1, ""]
 ].map((d, i) => ({
   id: "d" + i,
   name: d[0],
@@ -58,7 +52,7 @@ const DEF = [
 let dishes;
 try {
   dishes = JSON.parse(localStorage.getItem("hnag.dishes"));
-} catch (e) {}
+} catch (e) { }
 
 if (!Array.isArray(dishes) || !dishes.length) {
   dishes = DEF;
@@ -75,7 +69,7 @@ if (!Array.isArray(dishes) || !dishes.length) {
 const save = () => {
   try {
     localStorage.setItem("hnag.dishes", JSON.stringify(dishes));
-  } catch (e) {}
+  } catch (e) { }
 };
 
 /* Phân loại độ hiếm & phân khúc giá (Gaming Rarity Tiers) */
