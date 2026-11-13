@@ -3,44 +3,245 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hôm nay ăn gì</title>
+<title>Hôm nay ăn gì - Mở hòm ăn trưa</title>
 <meta name="description" content="Mở hòm ăn trưa: quay ngẫu nhiên món ăn theo ngân sách ở Hà Nội.">
 <link rel="stylesheet" href="css/style.css">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<header><b>truanayangi</b><button id="snd" aria-pressed="true">🔊 Âm thanh bật</button></header>
-<main>
-  <h1>Mở hòm ăn trưa</h1>
-  <div class="sub">Cư dân mạng đã mở <b id="cnt">0</b> hòm</div>
-  <div class="reel" id="reel" aria-live="polite"><div class="mark"></div><div class="strip" id="strip"></div></div>
-  <div class="ctl">
-    <label>Mức chi tối đa mỗi món
-      <select id="bud"><option value="30000">30.000đ</option><option value="50000" selected>50.000đ</option><option value="80000">80.000đ</option><option value="120000">120.000đ</option><option value="9999999">Không giới hạn</option></select>
-    </label>
-    <label class="sw"><input type="checkbox" id="veg"> 🌿 Ăn chay</label>
-    <button class="go" id="go">MỞ HÒM</button>
+
+<header>
+  <div class="brand">
+    <div class="brand-badge">🍱</div>
+    <div class="brand-text">
+      <b>Hôm Nay Ăn Gì</b>
+      <span class="badge-sub">Lootbox Edition</span>
+    </div>
   </div>
-  <div class="bar"><h2 style="border:0;padding:0">Vật phẩm trong hòm</h2><button class="add" id="add">+ Thêm món</button></div>
+  <div class="hdr-actions">
+    <button id="snd" class="hdr-btn" aria-pressed="true" title="Bật/Tắt âm thanh">
+      <span class="snd-icon">🔊</span><span class="snd-text"> Âm thanh bật</span>
+    </button>
+    <button id="roleBtn" class="hdr-btn role-btn is-guest" title="Bấm để đăng nhập Quản trị">
+      <span class="role-icon">🔒</span> <span class="role-text">Khách</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Mở Hòm Ăn Trưa</h1>
+    <div class="sub">Cư dân mạng đã mở <span class="counter-badge" id="cnt">0</span> hòm</div>
+  </div>
+
+  <!-- Khung quay mở hòm phong cách CS:GO -->
+  <div class="reel-box">
+    <div class="vignette left"></div>
+    <div class="vignette right"></div>
+    <div class="mark">
+      <div class="mark-arrow top">▼</div>
+      <div class="mark-line"></div>
+      <div class="mark-arrow bottom">▲</div>
+    </div>
+    <div class="reel" id="reel" aria-live="polite">
+      <div class="strip" id="strip"></div>
+    </div>
+  </div>
+
+  <!-- Thanh điều khiển ngân sách & quay -->
+  <div class="ctl">
+    <div class="ctl-group">
+      <label for="bud">💰 Mức chi tối đa mỗi món</label>
+      <div class="select-wrapper">
+        <select id="bud">
+          <option value="30000">30.000đ (Tiết kiệm)</option>
+          <option value="50000" selected>50.000đ (Bình dân)</option>
+          <option value="80000">80.000đ (Tầm trung)</option>
+          <option value="120000">120.000đ (Thoải mái)</option>
+          <option value="9999999">Không giới hạn (Đại gia)</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="sw">
+      <input type="checkbox" id="veg">
+      <span class="sw-slider"></span>
+      <span class="sw-label">🌿 Chế độ ăn chay</span>
+    </label>
+
+    <button class="go" id="go">
+      <span class="go-text">MỞ HÒM NGAY</span>
+      <span class="go-shine"></span>
+    </button>
+  </div>
+
+  <!-- Danh sách vật phẩm trong hòm -->
+  <div class="bar">
+    <div class="bar-title">
+      <h2>📦 Vật phẩm trong hòm</h2>
+      <span class="item-count" id="itemCount">0 món</span>
+    </div>
+    <div class="bar-actions">
+      <div class="filter-chips" id="filterChips">
+        <button class="chip active" data-filter="all">Tất cả</button>
+        <button class="chip" data-filter="u35">&le; 35k</button>
+        <button class="chip" data-filter="u50">&le; 50k</button>
+        <button class="chip" data-filter="u70">&le; 70k</button>
+        <button class="chip" data-filter="veg">🌿 Món chay</button>
+      </div>
+      <button class="add" id="add" style="display:none">+ Thêm món</button>
+    </div>
+  </div>
+
   <div class="grid" id="grid"></div>
-  <p class="note">Giá là mức tham khảo trung bình tại Hà Nội (1 suất, quán bình dân – tầm trung), bấm vào món để sửa giá. Ảnh tải lên được lưu trong trình duyệt của bạn.</p>
+  <p class="note" id="note">Giá là mức tham khảo trung bình tại Hà Nội (1 suất, quán bình dân – tầm trung).</p>
 </main>
 
-<dialog id="dlg"><form method="dialog" class="f" id="frm">
-  <div class="pv" id="pv"></div>
-  <input type="file" id="file" accept="image/*">
-  <label>Tên món<input type="text" id="fn" required maxlength="40"></label>
-  <label>Giá trung bình (đ)<input type="number" id="fp" min="0" step="1000" required></label>
-  <label>Emoji (hiện khi chưa có ảnh)<input type="text" id="fe" maxlength="4"></label>
-  <label class="sw"><input type="checkbox" id="fv"> Món chay</label>
-  <div class="row"><button type="button" class="del" id="fd">Xóa</button><button type="button" id="fc">Hủy</button><button class="ok" id="fs" value="ok">Lưu</button></div>
-</form></dialog>
+<!-- Dialog Sửa / Thêm món (Dành cho Quản trị viên) -->
+<dialog id="dlg">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="dlgTitle">Thông tin món ăn</h3>
+      <button type="button" class="btn-close" id="dlgClose" aria-label="Đóng">&times;</button>
+    </div>
+    <form method="dialog" class="f" id="frm">
+      <div class="pv-wrap">
+        <div class="pv" id="pv"></div>
+      </div>
+      <div class="file-upload-box">
+        <label for="file" class="file-lbl">
+          <span>📁 Chọn ảnh tải lên</span>
+          <span class="file-hint">Tự động làm nét và khớp khung</span>
+        </label>
+        <input type="file" id="file" accept="image/*">
+      </div>
+      <div class="fit-row" id="fitRow" style="display:none">
+        <span class="fit-lbl">Khớp khung:</span>
+        <label class="fit-opt"><input type="radio" name="fit" value="contain" checked> Tự động vừa vặn</label>
+        <label class="fit-opt"><input type="radio" name="fit" value="cover"> Lấp đầy ô</label>
+      </div>
+      <div class="input-row">
+        <label>Tên món
+          <input type="text" id="fn" required maxlength="40" placeholder="VD: Bún chả, Bánh mì...">
+        </label>
+      </div>
+      <div class="input-grid">
+        <label>Giá trung bình (đ)
+          <input type="number" id="fp" min="0" step="1000" required placeholder="50000">
+        </label>
+        <label>Emoji (khi không có ảnh)
+          <input type="text" id="fe" maxlength="4" placeholder="🍜">
+        </label>
+      </div>
+      <label class="sw sw-modal">
+        <input type="checkbox" id="fv">
+        <span class="sw-slider"></span>
+        <span class="sw-label">🌿 Đây là món ăn chay</span>
+      </label>
+      <div class="row">
+        <button type="button" class="del" id="fd">Xóa món</button>
+        <button type="button" class="btn-sec" id="fc">Hủy</button>
+        <button class="ok" id="fs" value="ok">Lưu thay đổi</button>
+      </div>
+    </form>
+  </div>
+</dialog>
 
-<dialog id="res"><div class="pv" id="rpv"></div><h3 id="rn"></h3><p id="rp"></p>
-  <div class="row" style="justify-content:center;display:flex"><button class="add" id="rc">Đóng</button></div></dialog>
+<!-- Dialog Chi tiết món ăn (Chỉ xem - Dành cho Khách) -->
+<dialog id="viewDlg">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Chi tiết món ăn</h3>
+      <button type="button" class="btn-close" id="viewClose">&times;</button>
+    </div>
+    <div class="pv-wrap">
+      <div class="pv" id="viewPv"></div>
+    </div>
+    <div class="view-body">
+      <div class="view-header-row">
+        <h2 id="viewName">Tên món</h2>
+        <span class="view-badge" id="viewBadge">Phổ thông</span>
+      </div>
+      <div class="view-price-row">
+        <span class="view-price-lbl">Giá trung bình:</span>
+        <span class="view-price" id="viewPrice">50.000đ</span>
+      </div>
+      <p class="view-veg" id="viewVeg">🌿 Món chay</p>
+    </div>
+    <div class="row" style="justify-content:center;display:flex;margin-top:16px;">
+      <button type="button" class="btn-sec" id="viewOk">Đóng</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Dialog Quản trị viên (Đăng nhập PIN / Đổi mã PIN / Đăng xuất) -->
+<dialog id="adminDlg">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="adminDlgTitle">👑 Quản lý quyền Quản trị</h3>
+      <button type="button" class="btn-close" id="adminClose">&times;</button>
+    </div>
+
+    <!-- Màn hình Đăng nhập PIN (dành cho Khách) -->
+    <div id="adminLoginSection">
+      <p class="admin-desc">Nhập mã PIN để mở khóa quyền thêm, chỉnh sửa và xóa món ăn.</p>
+      <div class="pin-box">
+        <input type="password" id="adminPinInput" maxlength="12" placeholder="Nhập mã PIN (Mặc định: 1234)" autocomplete="off">
+        <div class="pin-error" id="pinError" style="display:none">Mã PIN không đúng. Vui lòng thử lại!</div>
+      </div>
+      <div class="row" style="margin-top:18px;">
+        <button type="button" class="btn-sec" id="adminLoginCancel">Hủy</button>
+        <button type="button" class="ok" id="adminLoginSubmit">Đăng nhập</button>
+      </div>
+      <p class="admin-hint">💡 Mã PIN mặc định khi vừa cài đặt là <code>1234</code>.</p>
+    </div>
+
+    <!-- Màn hình Quản trị (khi đã là Admin) -->
+    <div id="adminManageSection" style="display:none">
+      <div class="admin-status-box">
+        <span class="status-icon">👑</span>
+        <div>
+          <b>Bạn đang đăng nhập với quyền Quản trị</b>
+          <div class="status-sub">Toàn quyền thêm, sửa, đổi giá và ảnh món ăn.</div>
+        </div>
+      </div>
+      <div class="pin-change-box">
+        <h4>Đổi mã PIN Quản trị:</h4>
+        <input type="password" id="newPinInput" maxlength="12" placeholder="Nhập mã PIN mới (ít nhất 4 số)">
+        <button type="button" class="btn-sec" id="savePinBtn">Cập nhật PIN</button>
+      </div>
+      <div class="row" style="margin-top:20px;justify-content:space-between;">
+        <button type="button" class="del" id="adminLogoutBtn">Đăng xuất</button>
+        <button type="button" class="btn-sec" id="adminManageClose">Đóng</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- Dialog Kết quả mở hòm trúng thưởng -->
+<dialog id="res">
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+  <div class="res-card">
+    <div class="res-sunburst"></div>
+    <div class="res-top-badge">🎉 CHÚC MỪNG BẠN ĐÃ MỞ ĐƯỢC</div>
+    <div class="res-pv-wrap">
+      <div class="pv" id="rpv"></div>
+    </div>
+    <h3 id="rn">Tên món</h3>
+    <div class="res-price-badge" id="rp">~ 50.000đ / suất</div>
+    <div class="res-actions">
+      <button class="btn-spin-again" id="spinAgainBtn">🔄 Mở tiếp hòm khác</button>
+      <button class="btn-confirm-dish" id="rc">🍽️ Chốt món này ngay!</button>
+    </div>
+  </div>
+</dialog>
+
 <script src="js/utils.js"></script>
 <script src="js/data.js"></script>
 <script src="js/images.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/reel.js"></script>
 <script src="js/main.js"></script>

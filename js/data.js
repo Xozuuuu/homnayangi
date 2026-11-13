@@ -1,12 +1,88 @@
 "use strict";
-const DEF=[
-["Bánh mì",25000,"🥖"],["Bún chả",50000,"🍜"],["Phở bò",55000,"🍜"],["Bún đậu mắm tôm",50000,"🍢"],
-["Cơm rang dưa bò",45000,"🍚"],["Cơm tấm sườn",50000,"🍛"],["Bún riêu cua",45000,"🍲"],["Bánh cuốn",35000,"🥟"],
-["Xôi gà",30000,"🍙"],["Cháo sườn",30000,"🥣"],["Bún bò Huế",55000,"🍜"],["Miến lươn",55000,"🍲"],
-["Gà rán",70000,"🍗"],["Pizza",99000,"🍕"],["Cơm trộn Hàn Quốc",70000,"🍱"],["Lẩu mini",120000,"🍲"],
-["Cơm chay đậu sốt cà",40000,"🍛",1],["Gỏi cuốn chay",30000,"🥗",1],["Bún chay",40000,"🍜",1],["Xôi đậu xanh",20000,"🍙",1]
-].map((d,i)=>({id:"d"+i,name:d[0],price:d[1],emoji:d[2],veg:!!d[3]}));
-let dishes; try{dishes=JSON.parse(localStorage.getItem("hnag.dishes"))}catch(e){}
-if(!Array.isArray(dishes)||!dishes.length)dishes=DEF;
-const save=()=>{try{localStorage.setItem("hnag.dishes",JSON.stringify(dishes))}catch(e){}};
-const rar=p=>p<35000?["#6b7a90"]:p<50000?["#4b69ff"]:p<70000?["#8847ff"]:p<100000?["#d32ee6"]:["#eb4b4b"];
+
+const IMG_MAP = {
+  "bánh mì": "img/banhmithit.webp",
+  "bánh mì thịt": "img/banhmithit.webp",
+  "bún chả": "img/buncha.jpg",
+  "phở bò": "img/phobo.jpg",
+  "bún đậu mắm tôm": "img/bundaumamtom.jpg",
+  "cơm rang dưa bò": "img/comrangduabo.jpg",
+  "cơm tấm sườn": "img/comtamsuon.png",
+  "bún riêu cua": "img/bunrieucua.webp",
+  "bánh cuốn": "img/banhcuon.jpg",
+  "xôi gà": "img/xoiga.jpg",
+  "cháo sườn": "img/chaosuon.jpg",
+  "bún bò huế": "img/bunbohue.jpg",
+  "miến lươn": "img/mienluon.jpg",
+  "gà rán": "img/garan.jpg",
+  "pizza": "img/pizza.avif",
+  "bánh đa cua": "img/banhdacua.jpg",
+  "gỏi cuốn tôm thịt": "img/goicuontomthit.jpg",
+  "nem nướng nha trang": "img/nemnuongnhatrang.jpg"
+};
+
+const DEF = [
+  ["Bánh mì thịt", 25000, "🥖", 0, "img/banhmithit.webp"],
+  ["Bún chả", 50000, "🍜", 0, "img/buncha.jpg"],
+  ["Phở bò", 55000, "🍜", 0, "img/phobo.jpg"],
+  ["Bún đậu mắm tôm", 50000, "🍢", 0, "img/bundaumamtom.jpg"],
+  ["Cơm rang dưa bò", 45000, "🍚", 0, "img/comrangduabo.jpg"],
+  ["Cơm tấm sườn", 50000, "🍛", 0, "img/comtamsuon.png"],
+  ["Bún riêu cua", 45000, "🍲", 0, "img/bunrieucua.webp"],
+  ["Bánh cuốn", 35000, "🥟", 0, "img/banhcuon.jpg"],
+  ["Xôi gà", 30000, "🍙", 0, "img/xoiga.jpg"],
+  ["Cháo sườn", 30000, "🥣", 0, "img/chaosuon.jpg"],
+  ["Bún bò Huế", 55000, "🍜", 0, "img/bunbohue.jpg"],
+  ["Miến lươn", 55000, "🍲", 0, "img/mienluon.jpg"],
+  ["Bánh đa cua", 45000, "🍲", 0, "img/banhdacua.jpg"],
+  ["Gà rán", 70000, "🍗", 0, "img/garan.jpg"],
+  ["Pizza", 99000, "🍕", 0, "img/pizza.avif"],
+  ["Nem nướng Nha Trang", 60000, "🍢", 0, "img/nemnuongnhatrang.jpg"],
+  ["Gỏi cuốn tôm thịt", 35000, "🥗", 0, "img/goicuontomthit.jpg"],
+  ["Cơm trộn Hàn Quốc", 70000, "🍱", 0, ""],
+  ["Lẩu mini", 120000, "🍲", 0, ""],
+  ["Cơm chay đậu sốt cà", 40000, "🍛", 1, ""],
+  ["Gỏi cuốn chay", 30000, "🥗", 1, ""],
+  ["Bún chay", 40000, "🍜", 1, ""],
+  ["Xôi đậu xanh", 20000, "🍙", 1, ""]
+].map((d, i) => ({
+  id: "d" + i,
+  name: d[0],
+  price: d[1],
+  emoji: d[2],
+  veg: !!d[3],
+  img: d[4] || IMG_MAP[d[0].toLowerCase()] || "",
+  fit: "contain"
+}));
+
+let dishes;
+try {
+  dishes = JSON.parse(localStorage.getItem("hnag.dishes"));
+} catch (e) {}
+
+if (!Array.isArray(dishes) || !dishes.length) {
+  dishes = DEF;
+} else {
+  // Tự động đồng bộ ảnh có sẵn từ thư mục img nếu món chưa có ảnh
+  dishes.forEach(d => {
+    if (!d.img && IMG_MAP[d.name.toLowerCase()]) {
+      d.img = IMG_MAP[d.name.toLowerCase()];
+    }
+    if (!d.fit) d.fit = "contain";
+  });
+}
+
+const save = () => {
+  try {
+    localStorage.setItem("hnag.dishes", JSON.stringify(dishes));
+  } catch (e) {}
+};
+
+/* Phân loại độ hiếm & phân khúc giá (Gaming Rarity Tiers) */
+const rar = p => {
+  if (p < 35000) return ["#6b7a90", "Phổ thông", "rgba(107,122,144,0.3)"];
+  if (p < 50000) return ["#3b82f6", "Đặc biệt", "rgba(59,130,246,0.3)"];
+  if (p < 70000) return ["#a855f7", "Hiếm", "rgba(168,85,247,0.3)"];
+  if (p < 100000) return ["#ec4899", "Thần thoại", "rgba(236,72,153,0.3)"];
+  return ["#ef4444", "Huyền thoại", "rgba(239,68,68,0.3)"];
+};
