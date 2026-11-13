@@ -49,22 +49,42 @@ const DEF = [
   fit: "contain"
 }));
 
+const REMOVED_NAMES = new Set([
+  "cơm trộn hàn quốc",
+  "lẩu mini",
+  "cơm chay đậu sốt cà",
+  "gỏi cuốn chay",
+  "bún chay",
+  "xôi đậu xanh"
+]);
+
+const DATA_VER = "2026.11.13.17";
 let dishes;
 try {
   dishes = JSON.parse(localStorage.getItem("hnag.dishes"));
 } catch (e) { }
 
-if (!Array.isArray(dishes) || !dishes.length) {
-  dishes = DEF;
-} else {
-  // Tự động đồng bộ ảnh có sẵn từ thư mục img nếu món chưa có ảnh
-  dishes.forEach(d => {
-    if (!d.img && IMG_MAP[d.name.toLowerCase()]) {
-      d.img = IMG_MAP[d.name.toLowerCase()];
-    }
-    if (!d.fit) d.fit = "contain";
-  });
+// Dọn dẹp triệt để các món đã xóa khỏi localStorage của trình duyệt
+if (!Array.isArray(dishes) || !dishes.length || localStorage.getItem("hnag.ver") !== DATA_VER) {
+  if (Array.isArray(dishes) && dishes.length) {
+    dishes = dishes.filter(d => !REMOVED_NAMES.has((d.name || "").trim().toLowerCase()));
+    if (!dishes.length) dishes = DEF;
+  } else {
+    dishes = DEF;
+  }
+  try {
+    localStorage.setItem("hnag.ver", DATA_VER);
+    localStorage.setItem("hnag.dishes", JSON.stringify(dishes));
+  } catch (e) { }
 }
+
+// Tự động đồng bộ ảnh có sẵn từ thư mục img nếu món chưa có ảnh
+dishes.forEach(d => {
+  if (!d.img && IMG_MAP[(d.name || "").toLowerCase()]) {
+    d.img = IMG_MAP[(d.name || "").toLowerCase()];
+  }
+  if (!d.fit) d.fit = "contain";
+});
 
 const save = () => {
   try {
